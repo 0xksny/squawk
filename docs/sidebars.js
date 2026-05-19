@@ -41,6 +41,7 @@ module.exports = {
       "require-concurrent-reindex",
       "prefer-repack",
       "custom-require-timestamps",
+      "custom-require-id",
       // xtask:new-rule:error-name
     ],
   },

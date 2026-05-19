@@ -235,7 +235,12 @@ const rules = [
   {
     name: "custom-require-timestamps",
     tags: ["custom"],
-    description: "Require created_at, updated_at, and deleted_at timestamps in table fields.",
+    description: "Require tables to have created_at, updated_at, and deleted_at fields.",
+  },
+  {
+    name: "custom-require-id",
+    tags: ["custom"],
+    description: "Require tables to have id field.",
   },
   // xtask:new-rule:rule-doc-meta
 ]
