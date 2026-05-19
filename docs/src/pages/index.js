@@ -232,6 +232,11 @@ const rules = [
     tags: ["locking"],
     description: "Prevent blocking reads/writes to table when rebuilding.",
   },
+  {
+    name: "custom-require-timestamps",
+    tags: ["custom"],
+    description: "Require created_at, updated_at, and deleted_at timestamps in table fields.",
+  },
   // xtask:new-rule:rule-doc-meta
 ]
 

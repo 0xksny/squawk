@@ -43,6 +43,7 @@ use rules::ban_truncate_cascade;
 use rules::ban_uncommitted_transaction;
 use rules::changing_column_type;
 use rules::constraint_missing_not_valid;
+use rules::custom_require_timestamps;
 use rules::disallow_unique_constraint;
 use rules::identifier_too_long;
 use rules::prefer_bigint_over_int;
@@ -103,6 +104,7 @@ pub enum Rule {
     IdentifierTooLong,
     RequireConcurrentPartitionDetach,
     RequireConcurrentReindex,
+    CustomRequireTimestamps,
     // xtask:new-rule:error-name
 }
 
@@ -110,7 +112,10 @@ impl Rule {
     /// Rules that are opt-in are not enabled by default.
     /// They must be explicitly included via configuration.
     pub fn is_opt_in(&self) -> bool {
-        matches!(self, Rule::RequireTableSchema)
+        matches!(
+            self,
+            Rule::RequireTableSchema | Rule::CustomRequireTimestamps
+        )
     }
 }
 
@@ -159,6 +164,7 @@ impl TryFrom<&str> for Rule {
             "identifier-too-long" => Ok(Rule::IdentifierTooLong),
             "require-concurrent-partition-detach" => Ok(Rule::RequireConcurrentPartitionDetach),
             "require-concurrent-reindex" => Ok(Rule::RequireConcurrentReindex),
+            "custom-require-timestamps" => Ok(Rule::CustomRequireTimestamps),
             // xtask:new-rule:str-name
             _ => Err(format!("Unknown violation name: {s}")),
         }
@@ -227,6 +233,7 @@ impl fmt::Display for Rule {
             Rule::IdentifierTooLong => "identifier-too-long",
             Rule::RequireConcurrentPartitionDetach => "require-concurrent-partition-detach",
             Rule::RequireConcurrentReindex => "require-concurrent-reindex",
+            Rule::CustomRequireTimestamps => "custom-require-timestamps",
             // xtask:new-rule:variant-to-name
         };
         write!(f, "{val}")
@@ -476,6 +483,9 @@ impl Linter {
         if self.rules.contains(&Rule::RequireConcurrentReindex) {
             require_concurrent_reindex(self, file);
         }
+        if self.rules.contains(&Rule::CustomRequireTimestamps) {
+            custom_require_timestamps(self, file);
+        }
         // xtask:new-rule:rule-call
 
         // locate any ignores in the file
@@ -558,18 +568,27 @@ mod tests {
     fn with_rules_opt_in_disabled_by_default() {
         let linter = Linter::with_rules(&[], &[]);
         assert!(!linter.rules.contains(&Rule::RequireTableSchema));
+        assert!(!linter.rules.contains(&Rule::CustomRequireTimestamps));
     }
 
     #[test]
     fn with_rules_opt_in_enabled_via_include() {
-        let linter = Linter::with_rules(&[Rule::RequireTableSchema], &[]);
+        let linter = Linter::with_rules(
+            &[Rule::RequireTableSchema, Rule::CustomRequireTimestamps],
+            &[],
+        );
         assert!(linter.rules.contains(&Rule::RequireTableSchema));
+        assert!(linter.rules.contains(&Rule::CustomRequireTimestamps));
     }
 
     #[test]
     fn with_rules_exclude_takes_precedence_over_include() {
-        let linter = Linter::with_rules(&[Rule::RequireTableSchema], &[Rule::RequireTableSchema]);
+        let linter = Linter::with_rules(
+            &[Rule::RequireTableSchema, Rule::CustomRequireTimestamps],
+            &[Rule::RequireTableSchema, Rule::CustomRequireTimestamps],
+        );
         assert!(!linter.rules.contains(&Rule::RequireTableSchema));
+        assert!(!linter.rules.contains(&Rule::CustomRequireTimestamps));
     }
 
     #[test]

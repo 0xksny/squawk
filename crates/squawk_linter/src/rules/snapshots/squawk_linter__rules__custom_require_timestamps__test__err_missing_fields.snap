@@ -1,0 +1,29 @@
+---
+source: crates/squawk_linter/src/rules/custom_require_timestamps.rs
+assertion_line: 178
+expression: "lint_errors(sql, Rule::CustomRequireTimestamps)"
+---
+warning[custom-require-timestamps]: Table is missing required `created_at` column.
+  ╭▸ 
+2 │ ┏ CREATE TABLE my_table (
+3 │ ┃   id int
+4 │ ┃ );
+  │ ┗━━┛
+  │
+  ╰ help: Add `created_at timestamptz NOT NULL DEFAULT now()`.
+warning[custom-require-timestamps]: Table is missing required `updated_at` column.
+  ╭▸ 
+2 │ ┏ CREATE TABLE my_table (
+3 │ ┃   id int
+4 │ ┃ );
+  │ ┗━━┛
+  │
+  ╰ help: Add `updated_at timestamptz NOT NULL DEFAULT now()`.
+warning[custom-require-timestamps]: Table is missing required `deleted_at` column.
+  ╭▸ 
+2 │ ┏ CREATE TABLE my_table (
+3 │ ┃   id int
+4 │ ┃ );
+  │ ┗━━┛
+  │
+  ╰ help: Add `deleted_at timestamptz`.

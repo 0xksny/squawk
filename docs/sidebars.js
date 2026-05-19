@@ -40,6 +40,7 @@ module.exports = {
       "require-concurrent-partition-detach",
       "require-concurrent-reindex",
       "prefer-repack",
+      "custom-require-timestamps",
       // xtask:new-rule:error-name
     ],
   },

@@ -1,0 +1,13 @@
+---
+source: crates/squawk_linter/src/rules/custom_require_timestamps.rs
+assertion_line: 217
+expression: "lint_errors(sql, Rule::CustomRequireTimestamps)"
+---
+warning[custom-require-timestamps]: `created_at` must be `timestamptz NOT NULL DEFAULT now()`.
+  ╭▸ 
+4 │   created_at timestamptz NOT NULL,
+  ╰╴  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+warning[custom-require-timestamps]: `updated_at` must be `timestamptz NOT NULL DEFAULT now()`.
+  ╭▸ 
+5 │   updated_at timestamptz NOT NULL,
+  ╰╴  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
